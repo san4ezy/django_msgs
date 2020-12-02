@@ -6,5 +6,5 @@ setup(name='django_msgs',
       author='Alexander Yudkin',
       author_email='san4ezy@gmail.com',
       url='',
-      packages=['msgs', ],
+      packages=['msgs', 'msgs.providers', ],
  )
