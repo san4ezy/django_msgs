@@ -1,10 +1,27 @@
-from distutils.core import setup
+import setuptools
 
-setup(name='django_msgs',
-      version='0.1',
-      description='Email and SMS messages framework',
-      author='Alexander Yudkin',
-      author_email='san4ezy@gmail.com',
-      url='',
-      packages=['msgs', 'msgs.providers', ],
- )
+
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
+setuptools.setup(
+    name="django_msgs",
+    version="0.1.6",
+    author="Alexander Yudkin",
+    author_email="san4ezy@gmail.com",
+    description="Emails and SMSs managing framework for Django",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/san4ezy/django_msgs",
+    packages=setuptools.find_packages(),
+    include_package_data=True,
+    classifiers=[
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'Intended Audience :: Developers',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ],
+    python_requires='>=3.6',
+)

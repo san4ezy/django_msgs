@@ -4,3 +4,4 @@
 rest-api.http
 .env.local
 *.pyc
+Makefile

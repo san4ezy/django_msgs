@@ -27,7 +27,11 @@ class SendgridProvider(TemplatingMixin, BaseProvider):
         for attachment in attachments:
             sendgrid_message.add_attachment(attachment)
         # sendgrid_message.add_attachment(self.get_logo_attachment())  # must be removed to the child class for the library version
-        response = self.client.send(sendgrid_message)
+        try:
+            response = self.client.send(sendgrid_message)
+            self.success(message)
+        except Exception as e:
+            self.error(message, e.message)
         return response
 
     def build_attachment_object(self, **kwargs):

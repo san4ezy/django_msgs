@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
             name='Tpl',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('key', models.CharField(max_length=32, unique=True)),
                 ('subject_en', models.CharField(default='Subject', max_length=254)),
                 ('body_en', models.TextField()),
             ],

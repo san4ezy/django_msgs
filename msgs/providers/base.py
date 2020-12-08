@@ -1,6 +1,7 @@
 from django.conf import settings
 
 from msgs.exceptions import MSGSProviderIsDisabled
+from msgs.models import Msg
 
 
 class BaseProvider(object):
@@ -17,21 +18,35 @@ class BaseProvider(object):
     def get_sender(self) -> str:
         return self.settings['sender']
 
-    def perform(self, message, sender, **kwargs):
+    def success(self, message: Msg) -> Msg:
+        message.status = Msg.SENT
+        return message
+
+    def error(self, message: Msg, error_text: str) -> Msg:
+        message.status = Msg.ERROR
+        message.error = error_text
+        return message
+
+    def save_message(self, message: Msg):
+        # Call this method for saving message state
+        message.save()
+
+    def perform(self, message: Msg, sender: str, **kwargs) -> bool:
         """Override this method according to the particular provider"""
         return True
 
-    def pre_send(self, message, **kwargs):
+    def pre_send(self, message: Msg, **kwargs):
         pass
 
-    def post_send(self, message, **kwargs):
+    def post_send(self, message: Msg, **kwargs):
         pass
 
-    def send(self, message, **kwargs) -> bool:
+    def send(self, message: Msg, **kwargs) -> bool:
         sender = self.get_sender()
         if self.settings.get('is_active') and sender:
             self.pre_send(message, **kwargs)
             r = self.perform(message, sender, **kwargs)
             self.post_send(message, **kwargs)
+            self.save_message(message)
             return r
         raise MSGSProviderIsDisabled(f"{self.__class__.__name__}'s sending is disabled")

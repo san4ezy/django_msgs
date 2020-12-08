@@ -11,6 +11,7 @@ NULLABLE = {'blank': True, 'null': True}
 
 
 class Tpl(models.Model):
+    key = models.CharField(max_length=32, unique=True)
     subject_en = models.CharField(max_length=254, default='Subject')
     body_en = models.TextField()
     # extends = models.ForeignKey('self')
@@ -22,7 +23,7 @@ class Tpl(models.Model):
         return getattr(self, f'subject_{lang}')
 
     def get_body(self, lang):
-        return getattr(self, f'subject_{lang}')
+        return getattr(self, f'body_{lang}')
 
 
 # class AttachmentTpl(models.Model):
