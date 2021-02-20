@@ -43,6 +43,7 @@ class BaseProvider(object):
 
     def send(self, message: Msg, **kwargs) -> bool:
         sender = self.get_sender()
+        kwargs['lang'] = kwargs.get('lang', self.get_lang())
         if self.settings.get('is_active') and sender:
             self.pre_send(message, **kwargs)
             r = self.perform(message, sender, **kwargs)
