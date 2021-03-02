@@ -32,7 +32,7 @@ class EmailAdmin(admin.ModelAdmin):
     send.short_description = "Send email"
 
 
-# @admin.register(SMS)  # uncomment it for activate sms section at admin
+@admin.register(SMS)
 class SMSAdmin(admin.ModelAdmin):
     list_display = ('pk', 'recipient', 'tpl', 'status', 'created_at', 'modified_at',)
     list_filter = ('status', 'tpl',)
