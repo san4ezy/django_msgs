@@ -16,13 +16,13 @@ class TplAdmin(admin.ModelAdmin):
 
 @admin.register(Msg)
 class MsgAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'recipient', 'tpl', 'status', 'created_ad', 'modified_at',)
+    list_display = ('pk', 'recipient', 'tpl', 'status', 'created_at', 'modified_at',)
     list_filter = ('status', 'tpl',)
 
 
 @admin.register(Email)
 class EmailAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'recipient', 'tpl', 'status', 'created_ad', 'modified_at',)
+    list_display = ('pk', 'recipient', 'tpl', 'status', 'created_at', 'modified_at',)
     list_filter = ('status', 'tpl',)
     actions = ('send',)
 
@@ -34,7 +34,7 @@ class EmailAdmin(admin.ModelAdmin):
 
 # @admin.register(SMS)  # uncomment it for activate sms section at admin
 class SMSAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'recipient', 'tpl', 'status', 'created_ad', 'modified_at',)
+    list_display = ('pk', 'recipient', 'tpl', 'status', 'created_at', 'modified_at',)
     list_filter = ('status', 'tpl',)
     actions = ('send',)
 

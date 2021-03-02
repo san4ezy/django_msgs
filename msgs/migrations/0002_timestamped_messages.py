@@ -11,12 +11,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='msg',
             name='created_at',
-            field=models.DateTimeField(auto_now_add=True, null=True),
+            field=models.DateTimeField(auto_now_add=True, null=True, blank=True),
         ),
         migrations.AddField(
             model_name='msg',
             name='modified_at',
-            field=models.DateTimeField(auto_now=True),
+            field=models.DateTimeField(auto_now=True, null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='msg',

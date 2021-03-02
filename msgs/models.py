@@ -50,8 +50,8 @@ class Msg(TimeStampedModel):
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=IN_QUEUE)
     error = models.CharField(max_length=256, **NULLABLE)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True,  **NULLABLE)
+    modified_at = models.DateTimeField(auto_now=True, **NULLABLE)
 
     def __str__(self):
         return f"{self.tpl} msg for {self.recipient}"
