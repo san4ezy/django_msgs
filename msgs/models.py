@@ -37,11 +37,13 @@ class Tpl(models.Model):
 
 
 class Msg(TimeStampedModel):
-    IN_QUEUE, SENT, ERROR = range(3)
+    IN_QUEUE, SENT, ERROR, DELIVERED, REJECTED = range(5)
     STATUS_CHOICES = (
         (IN_QUEUE, 'In queue'),
         (SENT, 'Sent'),
         (ERROR, 'Error'),
+        (DELIVERED, 'Delivered'),
+        (REJECTED, 'Rejected'),
     )
 
     recipient = models.CharField(max_length=64)
@@ -49,6 +51,9 @@ class Msg(TimeStampedModel):
     context = JSONField(**NULLABLE)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=IN_QUEUE)
     error = models.CharField(max_length=256, **NULLABLE)
+
+    provider_id = models.CharField(max_length=64, **NULLABLE)
+    provider_response = models.CharField(max_length=256, **NULLABLE)
 
     created_at = models.DateTimeField(auto_now_add=True,  **NULLABLE)
     modified_at = models.DateTimeField(auto_now=True, **NULLABLE)
