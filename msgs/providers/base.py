@@ -47,7 +47,7 @@ class BaseProvider(object):
         if self.settings.get('is_active') and sender:
             self.pre_send(message, **kwargs)
             r = self.perform(message, sender, **kwargs)
-            self.post_send(message, **kwargs)
+            self.post_send(message, response=r, **kwargs)
             self.save_message(message)
             return r
         raise MSGSProviderIsDisabled(f"{self.__class__.__name__}'s sending is disabled")
