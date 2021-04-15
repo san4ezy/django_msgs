@@ -1,5 +1,6 @@
 import base64
 import os
+import re
 from io import BytesIO
 
 from django.conf import settings
@@ -54,6 +55,11 @@ class TemplatingMixin(object):
         #         )
         #     )
         return attachments
+
+    @classmethod
+    def html_to_text(cls, html):
+        clean_regex = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
+        return re.sub(clean_regex, '', html)
 
     def render(self, message, lang, context=None):
         title_tpl = DjangoTemplate(f"{message.tpl.get_subject(lang)}")
