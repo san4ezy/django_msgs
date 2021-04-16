@@ -2,6 +2,8 @@ from django.conf import settings
 from msgs.mixins import TemplatingMixin
 
 from pysendpulse.pysendpulse import PySendPulse
+
+from msgs.models import Msg
 from msgs.providers.base import BaseProvider
 
 
@@ -16,8 +18,7 @@ class SendpulseProvider(TemplatingMixin, BaseProvider):
             # memcached_host=MEMCACHED_HOST,
         )
 
-    def perform(self, message, sender: str, **kwargs):
-        lang = kwargs.get('lang', self.get_lang())
+    def perform(self, message: Msg, sender: str, lang: str, **kwargs):
         context = self.get_context_data(message)
         title_html, body_html = self.render(message, lang, context)
         attachments = self.get_attachments(message, lang, context)

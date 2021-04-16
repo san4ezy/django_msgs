@@ -7,7 +7,7 @@ class VoximplantProvider(Provider):
     def get_sender(self):
         return super().get_sender().strip('+')
 
-    def perform(self, message, sender):
+    def perform(self, message: Msg, sender: str, lang: str, **kwargs):
         try:
             return self.client.send_sms_message(
                 sender,

@@ -7,7 +7,7 @@ class TwilioProvider(Provider):
             self.settings['auth_token'],
         )
 
-    def perform(self, message, sender):
+    def perform(self, message: Msg, sender: str, lang: str, **kwargs):
         message = self.client.messages.create(
             body=f"{message.text}",
             from_=sender,

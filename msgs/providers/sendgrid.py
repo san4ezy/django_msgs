@@ -13,8 +13,7 @@ class SendgridProvider(TemplatingMixin, BaseProvider):
             self.settings['api_key']
         )
 
-    def perform(self, message, sender, **kwargs):
-        lang = kwargs.get('lang', self.get_lang())
+    def perform(self, message: Msg, sender: str, lang: str, **kwargs):
         context = self.get_context_data(message)
         title_html, body_html = self.render(message, lang, context)
         attachments = self.get_attachments(message, lang, context)

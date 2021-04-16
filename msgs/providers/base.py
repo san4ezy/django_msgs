@@ -9,7 +9,9 @@ class BaseProvider(object):
     settings = None
     default_language = 'en'
 
-    def get_lang(self):
+    def get_lang(self, lang=None):
+        if lang:
+            return lang
         try:
             return settings.MSGS['options']['default_language']
         except KeyError:
@@ -31,7 +33,7 @@ class BaseProvider(object):
         # Call this method for saving message state
         message.save()
 
-    def perform(self, message: Msg, sender: str, **kwargs) -> bool:
+    def perform(self, message: Msg, sender: str, lang: str, **kwargs) -> bool:
         """Override this method according to the particular provider"""
         return True
 
@@ -43,7 +45,8 @@ class BaseProvider(object):
 
     def send(self, message: Msg, **kwargs) -> bool:
         sender = self.get_sender()
-        kwargs['lang'] = kwargs.get('lang', self.get_lang())
+        if not kwargs.get('lang'):
+            kwargs['lang'] = self.get_lang()
         if self.settings.get('is_active') and sender:
             self.pre_send(message, **kwargs)
             r = self.perform(message, sender, **kwargs)

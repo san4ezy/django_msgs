@@ -19,8 +19,7 @@ class SendinblueProvider(TemplatingMixin, BaseProvider):
             'name': self.settings['sender_name'],
         }
 
-    def perform(self, message, sender, **kwargs):
-        lang = kwargs.get('lang', self.get_lang())
+    def perform(self, message: Msg, sender: str, lang: str, **kwargs):
         title_html, body_html, attachments = self.render(message, lang)
 
         headers = {

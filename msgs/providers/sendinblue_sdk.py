@@ -27,8 +27,7 @@ class SendinblueSDKProvider(TemplatingMixin, BaseProvider):
     def get_sender(self) -> str:
         return self.sender_email
 
-    def perform(self, message, sender, **kwargs):
-        lang = kwargs.get('lang', self.get_lang())
+    def perform(self, message: Msg, sender: str, lang: str, **kwargs):
         title_html, body_html, attachments = self.render(message, lang)
         api_instance = sib_api_v3_sdk.SMTPApi(sib_api_v3_sdk.ApiClient(self.configuration))
         senderSmtp = sib_api_v3_sdk.SendSmtpEmailSender(
