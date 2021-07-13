@@ -6,7 +6,8 @@ from msgs.models import Tpl, Msg, Email, SMS
 
 @admin.register(Tpl)
 class TplAdmin(admin.ModelAdmin):
-    list_display = ('subject_en',)
+    list_display = ('name', 'key', 'subject_en', 'type',)
+    list_filter = ('type',)
 
 
 # @admin.register(AttachmentTpl)

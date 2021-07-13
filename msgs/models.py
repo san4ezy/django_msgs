@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db.models import JSONField
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
+from django.db.models.enums import TextChoices
 
 from msgs.exceptions import MSGSUnknownProvider
 from msgs.helpers import get_provider_class_from_string

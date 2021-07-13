@@ -1,4 +1,6 @@
 from django.conf import settings
+
+from msgs.models import Msg
 from sendgrid import SendGridAPIClient, Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
 
 from msgs.providers.base import BaseProvider
