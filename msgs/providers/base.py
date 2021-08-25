@@ -22,6 +22,13 @@ class BaseProvider(object):
     def get_sender(self) -> str:
         return self.settings['sender']
 
+    @staticmethod
+    def get_context_data(message, context=None):
+        ctxt = message.context
+        if context and isinstance(context, dict):
+            ctxt.update(context)
+        return ctxt
+
     def success(self, message: AbstractMessage) -> AbstractMessage:
         message.status = self.model.Status.SENT
         return message

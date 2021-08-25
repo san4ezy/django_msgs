@@ -28,7 +28,8 @@ class AbstractTemplate(models.Model):
     notes = models.CharField(max_length=128, **NULLABLE)
 
     # type = models.CharField(max_length=16, choices=Type.choices, **NULLABLE)
-    key = models.CharField(max_length=32, unique=True)
+    key = models.CharField(max_length=64, unique=True)
+    external_key = models.CharField(max_length=64, **NULLABLE)
 
     subject_en = models.CharField(max_length=254, default='Subject')
     body_en = models.TextField()

@@ -21,8 +21,8 @@ class SendpulseEmailProvider(TemplatingMixin, BaseEmailProvider):
     def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs):
         context = self.get_context_data(message)
         title_html, body_html = self.render(message, lang, context)
-        attachments = self.get_attachments(message, lang, context)
-        sendpulse_message = {
+        # attachments = self.get_attachments(message, lang, context)
+        message_data = {
             'subject': title_html,
             'html': body_html,
             'text': self.html_to_text(body_html),
@@ -36,15 +36,31 @@ class SendpulseEmailProvider(TemplatingMixin, BaseEmailProvider):
                     'email': message.recipient,
                 },
             ],
-            # 'bcc': [{'name': '', 'email': ''}],
         }
-        # try:
-        response = self.client.smtp_send_mail(sendpulse_message)
-        # except Exception as e:
-        #     self.error(message, str(e))
-        # else:
-        #     if response.get('result', False):
-        #         self.success(message)
-        #     else:
-        #         self.error(response.get('message'), response)
+        response = self.client.smtp_send_mail(message_data)
+        return response
+
+
+class SendpulseTemplatingEmailProvider(SendpulseEmailProvider):
+    def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs):
+        context = self.get_context_data(message)
+        title_html, body_html = self.render(message, lang, context)
+        message_data = {
+            'subject': title_html,
+            'from': {
+                'name': self.settings['sender_name'],
+                'email': self.settings['sender'],
+            },
+            'to': [
+                {
+                    'name': '',
+                    'email': message.recipient,
+                },
+            ],
+            "template": {
+                'id': message.template.external_key,
+                'variables': context,
+            },
+        }
+        response = self.client.smtp_send_mail_with_template(message_data)
         return response

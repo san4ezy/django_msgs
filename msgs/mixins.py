@@ -10,12 +10,6 @@ from django.template.loader import get_template
 
 
 class TemplatingMixin(object):
-    def get_context_data(self, message, context=None):
-        ctxt = message.context
-        if context and isinstance(context, dict):
-            ctxt.update(context)
-        return ctxt
-
     def build_attachment_object(self, **kwargs):
         """Override it according to your provider's SDK"""
         return
