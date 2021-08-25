@@ -1,13 +1,13 @@
 from django.conf import settings
 
-from msgs.models import Msg
+from msgs.abstract.models import AbstractMessage
 from sendgrid import SendGridAPIClient, Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
 
-from msgs.providers.base import BaseProvider
+from msgs.providers.base import BaseEmailProvider
 from msgs.mixins import TemplatingMixin
 
 
-class SendgridProvider(TemplatingMixin, BaseProvider):
+class SendgridEmailProvider(TemplatingMixin, BaseEmailProvider):
     settings = settings.MSGS['providers']['sendgrid']['options']
 
     def __init__(self):
@@ -15,12 +15,12 @@ class SendgridProvider(TemplatingMixin, BaseProvider):
             self.settings['api_key']
         )
 
-    def perform(self, message: Msg, sender: str, lang: str, **kwargs):
+    def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs):
         context = self.get_context_data(message)
         title_html, body_html = self.render(message, lang, context)
         attachments = self.get_attachments(message, lang, context)
         sendgrid_message = Mail(
-            from_email=self.settings['sender'],
+            from_email=self.get_sender(),
             to_emails=message.recipient,
             subject=title_html,
             html_content=body_html,
@@ -28,11 +28,7 @@ class SendgridProvider(TemplatingMixin, BaseProvider):
         for attachment in attachments:
             sendgrid_message.add_attachment(attachment)
         # sendgrid_message.add_attachment(self.get_logo_attachment())  # must be removed to the child class for the library version
-        try:
-            response = self.client.send(sendgrid_message)
-            self.success(message)
-        except Exception as e:
-            self.error(message, e.message)
+        response = self.client.send(sendgrid_message)
         return response
 
     def build_attachment_object(self, **kwargs):

@@ -4,3 +4,7 @@ class MSGSUnknownProvider(Exception):
 
 class MSGSProviderIsDisabled(Exception):
     pass
+
+
+class MSGSTemplateDoesNotExist(Exception):
+    pass

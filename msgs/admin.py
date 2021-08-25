@@ -1,46 +1,37 @@
 from django.contrib import admin
-from django.conf import settings
-
-from msgs.models import Tpl, Msg, Email, SMS
 
 
-@admin.register(Tpl)
-class TplAdmin(admin.ModelAdmin):
-    list_display = ('name', 'key', 'subject_en', 'type',)
-    list_filter = ('type',)
+from msgs.abstract.admin import AbstractMessageAdmin, AbstractTemplateAdmin
+from msgs.models import (
+    SMSTemplate, EmailTemplate, MessageTemplate, SMS, Email, Message,
+)
 
 
-# @admin.register(AttachmentTpl)
-# class AttachmentTplAdmin(admin.ModelAdmin):
-#     list_display = ('name', 'template_name', 'tpl',)
+@admin.register(SMSTemplate)
+class SMSTemplateAdmin(AbstractTemplateAdmin):
+    pass
 
 
-@admin.register(Msg)
-class MsgAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'recipient', 'tpl', 'status', 'created_at', 'modified_at',)
-    list_filter = ('status', 'tpl',)
+@admin.register(EmailTemplate)
+class EmailTemplateAdmin(AbstractTemplateAdmin):
+    pass
+
+
+@admin.register(MessageTemplate)
+class MessageTemplateAdmin(AbstractTemplateAdmin):
+    pass
+
+
+@admin.register(Message)
+class MessageAdmin(AbstractMessageAdmin):
+    pass
 
 
 @admin.register(Email)
-class EmailAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'recipient', 'tpl', 'status', 'created_at', 'modified_at',)
-    list_filter = ('status', 'tpl',)
-    actions = ('send',)
-
-    def send(self, request, queryset):
-        for obj in queryset:
-            obj.send(lang=settings.MSGS['options']['default_language'])
-    send.short_description = "Send email"
+class EmailAdmin(AbstractMessageAdmin):
+    pass
 
 
 @admin.register(SMS)
-class SMSAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'recipient', 'tpl', 'status', 'created_at', 'modified_at',)
-    list_filter = ('status', 'tpl',)
-    actions = ('send',)
-
-    def send(self, request, queryset):
-        for obj in queryset:
-            obj.send(lang=settings.MSGS['options']['default_language'])
-    send.short_description = "Send sms"
-
+class SMSAdmin(AbstractMessageAdmin):
+    pass

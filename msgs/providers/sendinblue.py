@@ -3,11 +3,12 @@ import requests
 
 from django.conf import settings
 
-from msgs.providers.base import BaseProvider
+from msgs.providers.base import BaseEmailProvider
 from msgs.mixins import TemplatingMixin
+from msgs.abstract.models import AbstractMessage
 
 
-class SendinblueProvider(TemplatingMixin, BaseProvider):
+class SendinblueEmailProvider(TemplatingMixin, BaseEmailProvider):
     settings = settings.MSGS['providers']['sendinblue']['options']
 
     def __init__(self):
@@ -19,7 +20,7 @@ class SendinblueProvider(TemplatingMixin, BaseProvider):
             'name': self.settings['sender_name'],
         }
 
-    def perform(self, message: Msg, sender: str, lang: str, **kwargs):
+    def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs):
         title_html, body_html, attachments = self.render(message, lang)
 
         headers = {

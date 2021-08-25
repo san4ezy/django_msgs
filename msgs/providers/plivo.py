@@ -1,10 +1,10 @@
 from msgs.exceptions import MSGSProviderIsDisabled
 from msgs.mixins import TemplatingMixin
-from msgs.models import SMS, Msg
+from msgs.abstract.models import AbstractMessage
 
 import plivo
 
-from msgs.providers.base import BaseProvider
+from msgs.providers.base import BaseSMSProvider
 
 from django.conf import settings
 
@@ -13,7 +13,7 @@ class MSGSPlivoProviderError(Exception):
     pass
 
 
-class PlivoProvider(TemplatingMixin, BaseProvider):
+class PlivoSMSProvider(TemplatingMixin, BaseSMSProvider):
     settings = settings.MSGS['providers']['plivo']['options']
 
     def __init__(self):
@@ -31,7 +31,7 @@ class PlivoProvider(TemplatingMixin, BaseProvider):
                 'either one of "powerpack_uuid" or "sender" (source phone number) '
                 'must be provided')
 
-    def perform(self, message: Msg, sender: str, lang: str, **kwargs) -> bool:
+    def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs) -> bool:
         context = self.get_context_data(message)
         _, body = self.render(message, lang, context)
         extra_kwargs = {}
@@ -42,19 +42,14 @@ class PlivoProvider(TemplatingMixin, BaseProvider):
         else:
             extra_kwargs.update({'powerpack_uuid': self.powerpack_uuid})
 
-        try:
-            response = self.client.messages.create(
-                dst=message.recipient,
-                text=body,
-                **extra_kwargs,
-            )
-            self.success(message)
-        except Exception as e:
-            self.error(message, str(e))
-        else:
-            return response
+        response = self.client.messages.create(
+            dst=message.recipient,
+            text=body,
+            **extra_kwargs,
+        )
+        return response
 
-    def send(self, message: Msg, **kwargs) -> bool:
+    def send(self, message: AbstractMessage, **kwargs) -> bool:
         r = None
         try:
             r = super().send(message, **kwargs)

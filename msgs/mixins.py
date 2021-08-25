@@ -62,9 +62,9 @@ class TemplatingMixin(object):
         return re.sub(clean_regex, '', html)
 
     def render(self, message, lang, context=None):
-        title_tpl = DjangoTemplate(f"{message.tpl.get_subject(lang)}")
+        title_tpl = DjangoTemplate(f"{message.template.get_subject(lang)}")
         title_html = title_tpl.render(Context(context))
-        body_tpl = DjangoTemplate(f"{message.tpl.get_body(lang)}")
+        body_tpl = DjangoTemplate(f"{message.template.get_body(lang)}")
         body_html = body_tpl.render(Context(context))
         # attachments = self.get_attachments(message, context=context, lang=lang)
         return title_html, body_html
