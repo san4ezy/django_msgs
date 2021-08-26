@@ -82,6 +82,7 @@ class AbstractMessage(TimeStampedModel):
             template: str,
             recipient: str,
             context: dict,
+            related_to: Model = None,
     ):
         """Returns not saved instance"""
         template = cls.get_template(key=template)
@@ -90,6 +91,8 @@ class AbstractMessage(TimeStampedModel):
             template=template,
             context=context,
         )
+        if related_to:
+            instance.related_to = related_to
         return instance
 
     @classmethod
@@ -98,11 +101,13 @@ class AbstractMessage(TimeStampedModel):
             template: str,
             recipient: str,
             context: dict,
+            related_to: Model = None,
     ):
         instance = cls.build(
             template=template,
             recipient=recipient,
             context=context,
+            related_to=related_to,
         )
         instance.save()
         return instance
