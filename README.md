@@ -38,7 +38,7 @@ Look at the admin interface and create some templates for your messages.
 Now we can use them for sending messages:
 
 ```python
-from msgs.models import SMS, Email
+from msgs.models import Email
 
 template_key = 'registration'  # a unique key for search the template
 Email.create(
@@ -57,18 +57,18 @@ needed language fields and use the `send` method with a language prefix as you n
 Let's look at the one more very useful attribute -- `related_to`. This library uses a generic foreign key for linking messages with another objects. You should provide this object when you create a message.
 
 ```python
-from msgs.models import SMS, Email
+from msgs.models import SMS
 
 instance = new_user  # this is an object you want to link with the email
 
-Email.create(
+SMS.create(
     template='registration',
-    recipient='john.doe@example.com',
+    recipient='1234567890',
     context={
         'name': 'John Doe',
         'link': 'https://example.com/registration',
     },
-    related_to=instance,  # if does the trick
+    related_to=instance,  # it does the trick
 ).send()
 ```
 
