@@ -24,45 +24,59 @@ Apply the migrations for creation the tables at your database:
 
 ## Structure
 
-Django MSGS contains two common data models: Message and Tpl (template). The first one stores your messages, the second 
+Django MSGS contains two common data models: Message and Template. The first one stores your messages, the second 
 one describes the messaging templates. \
 If you need new type of email, you should create new Tpl with the HTML inside. After that you can use it for sending 
 messages with this template. \
-By default Django MSGS provide you with two proxy models: Email and SMS. You can customize them on your taste.
+By default Django MSGS provide you with three proxy models: `Email`, `SMS` and `Message`. You can customize them on your taste. \
+Also you can find a template model for any type of message: `EmailTemplate`, `SMSTemplate` and `MessageTemplate`.
 
 ## Quick example
 
-Let's create new template for sending registration emails and send one email with some lines of python code.
+Look at the admin interface and create some templates for your messages.
+
+Now we can use them for sending messages:
+
 ```python
-from msgs.models import Tpl, Email
+from msgs.models import SMS, Email
 
-registration_tpl = Tpl.objects.create(
-    key='registration',
-    subject_en='Welcome!',
-    body_en='''Hello, {{ name }}!
-    Welcome!
-    '''
-)
-
-email = Email.objects.create(
-    tpl=registration_tpl,
-    recipient='user@email.com',
+template_key = 'registration'  # a unique key for search the template
+Email.create(
+    template=template_key,
+    recipient='john.doe@example.com',
     context={
-        'name': 'John Doe'
+        'name': 'John Doe',
+        'link': 'https://example.com/registration',
     },
-)
-email.send(lang='en')
-``` 
+).send()
+```
 
-Also you can do this with the Django administration interface. \
-
-Did you catch the i18n options? You can just inherit the existing model with your custom model, add the 
+If you need i18n options, you can just inherit the existing template models with adding the 
 needed language fields and use the `send` method with a language prefix as you need.
+
+Let's look at the one more very useful attribute -- `related_to`. This library uses a generic foreign key for linking messages with another objects. You should provide this object when you create a message.
+
+```python
+from msgs.models import SMS, Email
+
+instance = new_user  # this is an object you want to link with the email
+
+Email.create(
+    template='registration',
+    recipient='john.doe@example.com',
+    context={
+        'name': 'John Doe',
+        'link': 'https://example.com/registration',
+    },
+    related_to=instance,  # if does the trick
+).send()
+```
 
 ## Providers
 
 The Django MSGS works with multiple providers. All of them are placed at the `providers` folder. 
-So you can discover them and choose what you need. \
+So you can discover them and choose what you need.
+
 You can find the `BaseProvider` class, hence nobody can stop you to build your own provider. 
 
 ## Settings
