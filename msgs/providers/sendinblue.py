@@ -21,7 +21,9 @@ class SendinblueEmailProvider(TemplatingMixin, BaseEmailProvider):
         }
 
     def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs):
-        title_html, body_html, attachments = self.render(message, lang)
+        context = self.get_context_data(message)
+        title_html, body_html = self.render(message, lang, context)
+        attachments = self.get_attachments(message, lang, context)
 
         headers = {
             "accept": "application/json",
