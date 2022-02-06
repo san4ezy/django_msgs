@@ -1,12 +1,10 @@
 import base64
 import os
 import re
-from io import BytesIO
+import mimetypes
 
 from django.conf import settings
 from django.template import Template as DjangoTemplate, Context
-from django.template.loader import get_template
-# from xhtml2pdf import pisa
 
 
 class TemplatingMixin(object):
@@ -27,27 +25,21 @@ class TemplatingMixin(object):
         )
 
     def get_attachments(self, message, lang, context=None) -> list:
-        # attachment_tpls = message.tpl.attachments.all()
         attachments = []
-        # if not attachment_tpls:
-        #     return attachments
-        # if not context:
-        #     context = self.get_context_data(message)
-        # for attachment_tpl in attachment_tpls:
-        #     tpl = get_template(f"{lang}/{attachment_tpl.template_name}.html")
-        #     html = tpl.render(context)
-        #     result = BytesIO()
-        #     pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
-        #     encoded_file = base64.b64encode(result.getvalue()).decode()
-        #     # encoded_file = base64.b64encode(HttpResponse(result.getvalue(), content_type='application/pdf')).decode()
-        #     attachments.append(
-        #         self.build_attachment_object(
-        #             file_content=encoded_file,
-        #             file_name='attachment.pdf',
-        #             file_type='application/pdf',
-        #             disposition='attachment',
-        #         )
-        #     )
+        if not hasattr(message, 'attachments'):
+            return attachments
+        for attachment in message.attachments.all():
+            encoded_file = base64.b64encode(attachment.file.read()).decode()
+            filename = attachment.file.name.rsplit('/', 1)[-1]
+            mimetype, _ = mimetypes.guess_type(filename)
+            attachments.append(
+                self.build_attachment_object(
+                    file_content=encoded_file,
+                    file_name=filename,
+                    file_type=mimetype,
+                    description='attachment',
+                )
+            )
         return attachments
 
     @classmethod
@@ -60,15 +52,4 @@ class TemplatingMixin(object):
         title_html = title_tpl.render(Context(context))
         body_tpl = DjangoTemplate(f"{message.template.get_body(lang)}")
         body_html = body_tpl.render(Context(context))
-        # attachments = self.get_attachments(message, context=context, lang=lang)
         return title_html, body_html
-
-    # render from file
-    # def render(self, message, lang):
-    #     context = self.get_context_data(message)
-    #     title_tpl = DjangoTemplate(f"{message.tpl.get_subject(lang)}")
-    #     title_html = title_tpl.render(Context(context))
-    #     body_tpl = get_template(f"{lang}/{message.tpl.key}.html")
-    #     body_html = body_tpl.render(context)
-    #     attachments = self.get_attachments(message, context=context, lang=lang)
-    #     return title_html, body_html, attachments

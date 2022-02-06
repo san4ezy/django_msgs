@@ -3,7 +3,7 @@ from django.contrib import admin
 
 from msgs.abstract.admin import AbstractMessageAdmin, AbstractTemplateAdmin
 from msgs.models import (
-    SMSTemplate, EmailTemplate, MessageTemplate, SMS, Email, Message,
+    SMSTemplate, EmailTemplate, MessageTemplate, SMS, Email, Message, EmailAttachment,
 )
 
 
@@ -34,4 +34,9 @@ class EmailAdmin(AbstractMessageAdmin):
 
 @admin.register(SMS)
 class SMSAdmin(AbstractMessageAdmin):
+    pass
+
+
+@admin.register(EmailAttachment)
+class EmailAttachmentAdmin(admin.ModelAdmin):
     pass

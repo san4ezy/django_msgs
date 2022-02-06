@@ -37,7 +37,7 @@ class SendinblueEmailProvider(TemplatingMixin, BaseEmailProvider):
             'subject': title_html,
             'to': [{'name': message.recipient, 'email': message.recipient}, ],
             'params': {
-                'LOGO': 'https://vetsapp.ch/img/logo.png',
+                'LOGO': 'https://example.com/logo.png',
             },
         }
         if attachments:

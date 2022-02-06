@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.db import models
 
-from msgs.abstract.models import AbstractTemplate, AbstractMessage
+from msgs.abstract.models import AbstractTemplate, AbstractMessage, AbstractAttachment
+from msgs.helpers import NULLABLE
 
 
 class SMSTemplate(AbstractTemplate):
@@ -26,6 +27,10 @@ class MessageTemplate(AbstractTemplate):
 #         return self.name
 
 
+class EmailAttachment(AbstractAttachment):
+    pass
+
+
 class SMS(AbstractMessage):
     template = models.ForeignKey(SMSTemplate, on_delete=models.CASCADE)
 
@@ -38,6 +43,7 @@ class SMS(AbstractMessage):
 
 class Email(AbstractMessage):
     template = models.ForeignKey(EmailTemplate, on_delete=models.CASCADE)
+    attachments = models.ManyToManyField(EmailAttachment)
 
     def get_provider_name(self):
         return settings.MSGS['email']

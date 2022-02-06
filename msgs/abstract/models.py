@@ -142,3 +142,10 @@ class AbstractMessage(TimeStampedModel):
     @classmethod
     def __get_template_model(cls) -> Model:
         return cls._meta.get_field(DEFAULT_TEMPLATE_FIELD).related_model
+
+
+class AbstractAttachment(models.Model):
+    class Meta:
+        abstract = True
+
+    file = models.FileField(upload_to='msgs/attachments/')
