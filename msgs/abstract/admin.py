@@ -4,7 +4,7 @@ from django.db.models.fields.json import JSONField
 from django_json_widget.widgets import JSONEditorWidget
 
 
-MESSAGE_FIELDS = ('recipient', 'template', 'status', 'created_at', 'related_to',)
+MESSAGE_FIELDS = ('recipient', 'template', 'status', 'sent_at', 'related_to',)
 TEMPLATE_FIELDS = ('name', 'key', 'subject_en',)
 
 

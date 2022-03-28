@@ -7,6 +7,7 @@ from django.db import models
 from django_extensions.db.models import TimeStampedModel
 from django.db.models.enums import TextChoices
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 
 from msgs.exceptions import MSGSUnknownProvider, MSGSTemplateDoesNotExist
 from msgs.helpers import NULLABLE, get_provider_class_from_string
@@ -68,6 +69,7 @@ class AbstractMessage(TimeStampedModel):
 
     created_at = models.DateTimeField(auto_now_add=True, **NULLABLE)
     modified_at = models.DateTimeField(auto_now=True, **NULLABLE)
+    sent_at = models.DateTimeField(**NULLABLE)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, **NULLABLE)
     object_id = models.PositiveIntegerField(**NULLABLE)
@@ -137,6 +139,7 @@ class AbstractMessage(TimeStampedModel):
 
     def send(self, lang=None):
         provider = self.get_provider()
+        self.sent_at = timezone.now()
         provider.send(self, lang=lang)
 
     @classmethod
