@@ -107,7 +107,7 @@ class AbstractMessage(TimeStampedModel):
             skip_duplicates: bool = None,
     ):
         if skip_duplicates is None:
-            skip_duplicates = settings.MSGS['options']['skip_duplicates']
+            skip_duplicates = settings.MSGS['options'].get('skip_duplicates')
         if skip_duplicates:
             cls.objects.filter(
                 template__key=template,
