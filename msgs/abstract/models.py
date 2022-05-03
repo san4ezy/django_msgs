@@ -108,12 +108,11 @@ class AbstractMessage(TimeStampedModel):
     ):
         if skip_duplicates is None:
             skip_duplicates = settings.MSGS['options'].get('skip_duplicates')
-        if skip_duplicates:
-            cls.objects.filter(
+        if skip_duplicates and cls.objects.filter(
                 template__key=template,
                 status=cls.Status.IN_QUEUE,
                 recipient=recipient,
-            ).exists()
+        ).exists():
             # skip duplicates in queue
             return
         instance = cls.build(
