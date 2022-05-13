@@ -47,12 +47,5 @@ class PlivoSMSProvider(TemplatingMixin, BaseSMSProvider):
             text=body,
             **extra_kwargs,
         )
+        message.provider_id = response['message_uuid'][0]
         return response
-
-    def send(self, message: AbstractMessage, **kwargs) -> bool:
-        r = None
-        try:
-            r = super().send(message, **kwargs)
-        except MSGSProviderIsDisabled as e:
-            pass
-        return r
