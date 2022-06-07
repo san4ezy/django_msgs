@@ -63,10 +63,10 @@ class BaseProvider(object):
             r = None
             try:
                 r = self.perform(message, sender, **kwargs)
-                self.success(message)
             except Exception as e:
                 self.error(message, str(e))
             else:
+                self.success(message)
                 self.post_send(message, response=r, **kwargs)
             finally:
                 self.save_message(message)
@@ -84,3 +84,9 @@ class BaseSMSProvider(BaseProvider):
 
 class BaseMessageProvider(BaseProvider):
     model = Message
+
+
+# class ProxyProvider(BaseProvider):
+#     proxy_model: BaseProvider
+#
+#     def send(self, message: AbstractMessage, **kwargs) -> bool:

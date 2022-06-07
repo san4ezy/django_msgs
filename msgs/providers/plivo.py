@@ -47,5 +47,7 @@ class PlivoSMSProvider(TemplatingMixin, BaseSMSProvider):
             text=body,
             **extra_kwargs,
         )
-        message.provider_id = response['message_uuid'][0]
+        response = response.__dict__
+        message.provider_response = response
+        message.provider_id = response.get('message_uuid', [None, ])[0]
         return response
