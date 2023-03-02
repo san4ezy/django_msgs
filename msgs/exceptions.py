@@ -8,3 +8,7 @@ class MSGSProviderIsDisabled(Exception):
 
 class MSGSTemplateDoesNotExist(Exception):
     pass
+
+
+class MSGSSignalNotFound(Exception):
+    pass
