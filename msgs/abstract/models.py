@@ -82,7 +82,7 @@ class AbstractMessage(TimeStampedModel):
     sent_at = models.DateTimeField(**NULLABLE)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, **NULLABLE)
-    object_id = models.PositiveIntegerField(**NULLABLE)
+    object_id = models.CharField(max_length=64, **NULLABLE)
     related_to = GenericForeignKey('content_type', 'object_id')
 
     def __init__(self, *args, **kwargs):
