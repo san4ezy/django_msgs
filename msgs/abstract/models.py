@@ -81,9 +81,11 @@ class AbstractMessage(TimeStampedModel):
     modified_at = models.DateTimeField(auto_now=True, **NULLABLE)
     sent_at = models.DateTimeField(**NULLABLE)
 
+    # additional service information could be saved here
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, **NULLABLE)
     object_id = models.CharField(max_length=64, **NULLABLE)
     related_to = GenericForeignKey('content_type', 'object_id')
+    service_context = JSONField(**NULLABLE)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -108,6 +110,7 @@ class AbstractMessage(TimeStampedModel):
             recipient: str,
             context: dict,
             related_to: Model = None,
+            service_context: dict = None,
     ):
         """Returns not saved instance"""
         template = cls.get_template(key=template)
@@ -128,6 +131,7 @@ class AbstractMessage(TimeStampedModel):
             recipient: str,
             context: dict,
             related_to: Model = None,
+            service_context: dict = None,
             skip_duplicates: bool = None,
     ):
         if skip_duplicates is None:
