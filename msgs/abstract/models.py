@@ -118,6 +118,7 @@ class AbstractMessage(TimeStampedModel):
             recipient=recipient,
             template=template,
             context=context,
+            service_context=service_context,
         )
         if related_to:
             instance.related_to = related_to
