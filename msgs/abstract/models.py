@@ -148,6 +148,7 @@ class AbstractMessage(TimeStampedModel):
             template=template,
             recipient=recipient,
             context=context,
+            service_context=service_context,
             related_to=related_to,
         )
         instance.save()
