@@ -1,7 +1,7 @@
 from django.conf import settings
 
 from msgs.abstract.models import AbstractMessage
-from sendgrid import SendGridAPIClient, Mail, Attachment, FileContent, FileName, FileType, Disposition, ContentId
+from sendgrid import SendGridAPIClient, Mail, Email, Attachment, FileContent, FileName, FileType, Disposition, ContentId
 
 from msgs.providers.base import BaseEmailProvider
 from msgs.mixins import TemplatingMixin
@@ -25,6 +25,16 @@ class SendgridEmailProvider(TemplatingMixin, BaseEmailProvider):
             subject=title_html,
             html_content=body_html,
         )
+
+        if message.reply_to:
+            sendgrid_message.reply_to = message.reply_to
+
+        for cc in message.get_cc_emails():
+            sendgrid_message.personalizations[0].add_cc(Email(cc))
+
+        for bcc in message.get_bcc_emails():
+            sendgrid_message.personalizations[0].add_bcc(Email(bcc))
+
         for attachment in attachments:
             sendgrid_message.add_attachment(attachment)
         # sendgrid_message.add_attachment(self.get_logo_attachment())  # must be removed to the child class for the library version
