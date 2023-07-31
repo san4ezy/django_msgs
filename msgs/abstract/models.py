@@ -111,6 +111,7 @@ class AbstractMessage(TimeStampedModel):
             context: dict,
             related_to: Model = None,
             service_context: dict = None,
+            **kwargs,
     ):
         """Returns not saved instance"""
         template = cls.get_template(key=template)
@@ -119,6 +120,7 @@ class AbstractMessage(TimeStampedModel):
             template=template,
             context=context,
             service_context=service_context,
+            **kwargs,
         )
         if related_to:
             instance.related_to = related_to
@@ -134,6 +136,7 @@ class AbstractMessage(TimeStampedModel):
             related_to: Model = None,
             service_context: dict = None,
             skip_duplicates: bool = None,
+            **kwargs,
     ):
         if skip_duplicates is None:
             skip_duplicates = settings.MSGS['options'].get('skip_duplicates')
@@ -150,6 +153,7 @@ class AbstractMessage(TimeStampedModel):
             context=context,
             service_context=service_context,
             related_to=related_to,
+            **kwargs,
         )
         instance.save()
         cls.send_signal(CREATED_SIGNAL, instance=instance)
