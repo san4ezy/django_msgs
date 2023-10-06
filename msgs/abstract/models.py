@@ -4,13 +4,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.db.models import JSONField, Model
 from django.db import models
+from django.forms import model_to_dict
 from django_extensions.db.models import TimeStampedModel
 from django.db.models.enums import TextChoices
 
 from django.utils import timezone
 
 from msgs.exceptions import (
-    MSGSUnknownProvider, MSGSTemplateDoesNotExist, MSGSSignalNotFound
+    MSGSUnknownProvider, MSGSTemplateDoesNotExist, MSGSSignalNotFound, MSGSCannotBeSent
 )
 from msgs.helpers import NULLABLE, get_provider_class_from_string
 from msgs.signals import (
@@ -68,6 +69,7 @@ class AbstractMessage(TimeStampedModel):
 
     template = models.ForeignKey(AbstractTemplate, on_delete=models.CASCADE)
     recipient = models.CharField(max_length=64)
+    sender = models.CharField(max_length=256, **NULLABLE)
     context = JSONField(**NULLABLE)
     status = models.CharField(
         max_length=16, choices=Status.choices, default=Status.IN_QUEUE,
@@ -75,7 +77,7 @@ class AbstractMessage(TimeStampedModel):
     error = models.CharField(max_length=256, **NULLABLE)
 
     provider_id = models.CharField(max_length=64, **NULLABLE)
-    provider_response = models.CharField(max_length=256, **NULLABLE)
+    provider_response = models.JSONField(max_length=256, **NULLABLE)
 
     created_at = models.DateTimeField(auto_now_add=True, **NULLABLE)
     modified_at = models.DateTimeField(auto_now=True, **NULLABLE)
@@ -159,6 +161,22 @@ class AbstractMessage(TimeStampedModel):
         cls.send_signal(CREATED_SIGNAL, instance=instance)
         return instance
 
+    def duplicate(self):
+        data = model_to_dict(self, exclude=[
+            'id', 'status', 'sent_at', 'service_context', 'provider_response',
+            'error', 'provider_id', 'template', 'content_type',
+        ])
+        data['template'] = self.template
+        data['content_type'] = self.content_type
+        attachments = []
+        if hasattr(self, 'attachments') and 'attachments' in data:
+            data.pop('attachments')
+            attachments = self.attachments.all()
+        duplicated_obj = self._meta.model.objects.create(**data)
+        for a in attachments:
+            duplicated_obj.attachments.add(a)
+        return duplicated_obj
+
     def get_provider_name(self):
         return 'development'
 
@@ -182,11 +200,26 @@ class AbstractMessage(TimeStampedModel):
     def get_status(self):
         return [x[1] for x in self.Status.choices if x[0] == self.status][0]
 
-    def send(self, lang=None):
+    def send(
+            self,
+            lang=None,
+            raise_exceptions: bool = None,
+            duplicate: bool = None,
+    ):
+        if duplicate is None:
+            duplicate = settings.MSGS['options'].get('auto_duplicate', False)
         provider = self.get_provider()
         self.sent_at = timezone.now()
-        provider.send(self, lang=lang)
-        self.send_signal(SENT_SIGNAL, instance=self)
+        try:
+            provider.send(self, lang=lang, raise_exceptions=raise_exceptions)
+        except MSGSCannotBeSent as e:
+            if duplicate:  # make a copy of this message and send it
+                msg = self.duplicate()
+                msg.send(lang=lang)
+            else:
+                raise e
+        else:
+            self.send_signal(SENT_SIGNAL, instance=self)
 
     @classmethod
     def __get_template_model(cls) -> Model:

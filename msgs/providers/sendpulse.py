@@ -18,7 +18,9 @@ class SendpulseEmailProvider(TemplatingMixin, BaseEmailProvider):
             # memcached_host=MEMCACHED_HOST,
         )
 
-    def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs):
+    def perform(
+            self, message: AbstractMessage, sender: str, lang: str, **kwargs
+    ) -> (dict, bool):
         context = self.get_context_data(message)
         title_html, body_html = self.render(message, lang, context)
         # attachments = self.get_attachments(message, lang, context)
@@ -38,11 +40,13 @@ class SendpulseEmailProvider(TemplatingMixin, BaseEmailProvider):
             ],
         }
         response = self.client.smtp_send_mail(message_data)
-        return response
+        return response.json(), True  # Dummy True
 
 
 class SendpulseTemplatingEmailProvider(SendpulseEmailProvider):
-    def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs):
+    def perform(
+            self, message: AbstractMessage, sender: str, lang: str, **kwargs
+    ) -> (dict, bool):
         context = self.get_context_data(message)
         title_html, body_html = self.render(message, lang, context)
         message_data = {
@@ -63,4 +67,4 @@ class SendpulseTemplatingEmailProvider(SendpulseEmailProvider):
             },
         }
         response = self.client.smtp_send_mail_with_template(message_data)
-        return response
+        return response.json(), True  # Dummy True

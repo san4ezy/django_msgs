@@ -15,12 +15,14 @@ class SendgridEmailProvider(TemplatingMixin, BaseEmailProvider):
             self.settings['api_key']
         )
 
-    def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs):
+    def perform(
+            self, message: AbstractMessage, sender: str, lang: str, **kwargs
+    ) -> (dict, bool):
         context = self.get_context_data(message)
         title_html, body_html = self.render(message, lang, context)
         attachments = self.get_attachments(message, lang, context)
         sendgrid_message = Mail(
-            from_email=self.get_sender(),
+            from_email=self.get_sender(message),
             to_emails=message.recipient,
             subject=title_html,
             html_content=body_html,
@@ -39,7 +41,7 @@ class SendgridEmailProvider(TemplatingMixin, BaseEmailProvider):
             sendgrid_message.add_attachment(attachment)
         # sendgrid_message.add_attachment(self.get_logo_attachment())  # must be removed to the child class for the library version
         response = self.client.send(sendgrid_message)
-        return response
+        return response.to_dict, 200 <= response.status_code < 300
 
     def build_attachment_object(self, **kwargs):
         attachment_kwargs = [

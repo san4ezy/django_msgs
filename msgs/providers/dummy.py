@@ -13,8 +13,8 @@ class DummyProvider(BaseProvider):
         super().__init__()
         self.model = apps.get_model(self.settings['model'])
 
-    def perform(self, message: AbstractMessage, sender: str, **kwargs) -> bool:
+    def perform(self, message: AbstractMessage, sender: str, **kwargs) -> (dict, bool):
         warnings.warn(
             f'DummyProvider: {message.recipient}({message.pk}): {message.context}'
         )
-        return True
+        return {}, True

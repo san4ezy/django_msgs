@@ -24,12 +24,14 @@ class TelegramProvider(TemplatingMixin, BaseMessageProvider):
         ))
         return f'{domain}/bot{token}/sendMessage?{args}'
 
-    def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs):
+    def perform(
+            self, message: AbstractMessage, sender: str, lang: str, **kwargs
+    ) -> (dict, bool):
         context = self.get_context_data(message)
         title_html, body_html = self.render(message, lang, context)
         text = self.get_request_string(self.bot_token, message.recipient, body_html)
         response = requests.get(text)
-        return response.json()
+        return response.json(), True  # Dummy True
 
 
 class TelegramLoggerProvider(TelegramProvider):
@@ -39,13 +41,15 @@ class TelegramLoggerProvider(TelegramProvider):
             cid = [cid, ]
         return cid
 
-    def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs):
+    def perform(
+            self, message: AbstractMessage, sender: str, lang: str, **kwargs
+    ) -> (dict, bool):
         cids = self.get_chat_id(message.recipient)
-        sender = self.get_sender()
+        sender = self.get_sender(message)
         context = self.get_context_data(message)
         title_html, body_html = self.render(message, lang, context)
         text = f'from: {sender}\nto:   {message.recipient}\n\ntitle: {title_html}\n\n {body_html}'
         for cid in cids:
             url = self.get_request_string(self.bot_token, cid, text)
             response = requests.get(url)
-        return {'status': 'ok'}
+        return {'status': 'ok'}, True  # Dummy response

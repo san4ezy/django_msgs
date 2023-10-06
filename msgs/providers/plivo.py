@@ -31,7 +31,9 @@ class PlivoSMSProvider(TemplatingMixin, BaseSMSProvider):
                 'either one of "powerpack_uuid" or "sender" (source phone number) '
                 'must be provided')
 
-    def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs) -> bool:
+    def perform(
+            self, message: AbstractMessage, sender: str, lang: str, **kwargs
+    ) -> (dict, bool):
         context = self.get_context_data(message)
         _, body = self.render(message, lang, context)
         extra_kwargs = {}
@@ -49,5 +51,7 @@ class PlivoSMSProvider(TemplatingMixin, BaseSMSProvider):
         )
         response = response.__dict__
         message.provider_response = response
-        message.provider_id = response.get('message_uuid', [None, ])[0]
-        return response
+        return response.to_dict, True  # Dummy True
+
+    def get_provider_id(self, message: AbstractMessage, response: dict) -> str:
+        return str(response.get('message_uuid', [None, ])[0])

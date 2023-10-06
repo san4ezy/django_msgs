@@ -29,7 +29,16 @@ class MessageAdmin(AbstractMessageAdmin):
 
 @admin.register(Email)
 class EmailAdmin(AbstractMessageAdmin):
-    pass
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj=obj)
+        fields = fieldsets[0][1]['fields']
+        fields.extend([
+            'reply_to',
+            'cc_emails',
+            'bcc_emails',
+        ])
+        fieldsets[0][1]['fields'] = fields
+        return fieldsets
 
 
 @admin.register(SMS)

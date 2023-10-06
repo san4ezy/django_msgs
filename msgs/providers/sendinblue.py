@@ -14,13 +14,15 @@ class SendinblueEmailProvider(TemplatingMixin, BaseEmailProvider):
     def __init__(self):
         self.url = "https://api.sendinblue.com/v3/smtp/email"
 
-    def get_sender(self) -> dict:
+    def get_sender(self, message: AbstractMessage, **kwargs) -> dict:
         return {
             'email': self.settings['sender_email'],
             'name': self.settings['sender_name'],
         }
 
-    def perform(self, message: AbstractMessage, sender: str, lang: str, **kwargs):
+    def perform(
+            self, message: AbstractMessage, sender: str, lang: str, **kwargs
+    ) -> (dict, bool):
         context = self.get_context_data(message)
         title_html, body_html = self.render(message, lang, context)
         attachments = self.get_attachments(message, lang, context)
@@ -32,7 +34,7 @@ class SendinblueEmailProvider(TemplatingMixin, BaseEmailProvider):
         }
 
         data = {
-            'sender': self.get_sender(),
+            'sender': self.get_sender(message),
             'htmlContent': body_html,
             'subject': title_html,
             'to': [{'name': message.recipient, 'email': message.recipient}, ],
@@ -44,7 +46,7 @@ class SendinblueEmailProvider(TemplatingMixin, BaseEmailProvider):
             data.update({'attachment': attachments})
 
         response = requests.request("POST", self.url, headers=headers, data=json.dumps(data))
-        return response.text
+        return response.json(), True  # Dummy True
 
     def build_attachment_object(self, **kwargs):
         return {

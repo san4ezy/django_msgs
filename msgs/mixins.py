@@ -37,7 +37,7 @@ class TemplatingMixin(object):
                     file_content=encoded_file,
                     file_name=filename,
                     file_type=mimetype,
-                    description='attachment',
+                    disposition='attachment',
                 )
             )
         return attachments

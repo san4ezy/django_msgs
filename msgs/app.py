@@ -6,5 +6,4 @@ class MSGSConfig(AppConfig):
     name = 'msgs'
 
     def ready(self):
-        # import apps.deposit.signals
-        pass
+        import msgs.signals

@@ -24,10 +24,12 @@ class SendinblueSDKProvider(TemplatingMixin, BaseProvider):
     def sender_email(self):
         return self.settings['sender_email']
 
-    def get_sender(self) -> str:
+    def get_sender(self, message: AbstractMessage, **kwargs) -> str:
         return self.sender_email
 
-    def perform(self, message: Msg, sender: str, lang: str, **kwargs):
+    def perform(
+            self, message: AbstractMessage, sender: str, lang: str, **kwargs
+    ) -> (dict, bool):
         title_html, body_html, attachments = self.render(message, lang)
         api_instance = sib_api_v3_sdk.SMTPApi(sib_api_v3_sdk.ApiClient(self.configuration))
         senderSmtp = sib_api_v3_sdk.SendSmtpEmailSender(
@@ -50,7 +52,7 @@ class SendinblueSDKProvider(TemplatingMixin, BaseProvider):
             sending_kwargs['attachment'] = attachments
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(**sending_kwargs)
         api_response = api_instance.send_transac_email(send_smtp_email)
-        return api_response
+        return api_response.to_dict, True  # Dummy True
 
     def build_attachment_object(self, **kwargs):
         return sib_api_v3_sdk.SendSmtpEmailAttachment(

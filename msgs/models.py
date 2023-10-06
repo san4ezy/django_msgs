@@ -38,7 +38,7 @@ class Email(AbstractMessage):
     template = models.ForeignKey(EmailTemplate, on_delete=models.CASCADE)
     attachments = models.ManyToManyField(EmailAttachment, blank=True)
 
-    reply_to = models.CharField(max_length=64, **NULLABLE)
+    reply_to = models.CharField(max_length=256, **NULLABLE)
     cc_emails = models.JSONField(**NULLABLE)
     bcc_emails = models.JSONField(**NULLABLE)
 

@@ -1,4 +1,6 @@
-from django.dispatch import Signal
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import Signal, receiver
 
 
 BUILT_SIGNAL, CREATED_SIGNAL, SENT_SIGNAL, STATUS_CHANGED_SIGNAL = \
@@ -42,3 +44,12 @@ SIGNALS = {
         STATUS_CHANGED_SIGNAL: sms_status_changed,
     },
 }
+
+
+@receiver(post_save, sender='msgs.Email')
+@receiver(post_save, sender='msgs.SMS')
+@receiver(post_save, sender='msgs.Message')
+def delete_after_sending(sender, instance, **kwargs):
+    auto_delete = settings.MSGS['options'].get('auto_delete', False)
+    if auto_delete and instance.status == instance.Status.SENT:
+        instance.delete()
