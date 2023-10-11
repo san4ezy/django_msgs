@@ -77,7 +77,7 @@ class AbstractMessage(TimeStampedModel):
     error = models.CharField(max_length=256, **NULLABLE)
 
     provider_id = models.CharField(max_length=64, **NULLABLE)
-    provider_response = models.JSONField(max_length=256, **NULLABLE)
+    provider_response = models.TextField(**NULLABLE)
 
     created_at = models.DateTimeField(auto_now_add=True, **NULLABLE)
     modified_at = models.DateTimeField(auto_now=True, **NULLABLE)

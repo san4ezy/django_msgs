@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="email",
             name="provider_response",
-            field=models.JSONField(blank=True, max_length=256, null=True),
+            field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
             model_name="email",
@@ -38,11 +38,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="message",
             name="provider_response",
-            field=models.JSONField(blank=True, max_length=256, null=True),
+            field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
             model_name="sms",
             name="provider_response",
-            field=models.JSONField(blank=True, max_length=256, null=True),
+            field=models.TextField(blank=True, null=True),
         ),
     ]
