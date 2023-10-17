@@ -37,6 +37,7 @@ class EmailAdmin(AbstractMessageAdmin):
             'cc_emails',
             'bcc_emails',
         ])
+        fields = list(set(fields))
         fieldsets[0][1]['fields'] = fields
         return fieldsets
 
