@@ -29,19 +29,36 @@ class MessageAdmin(AbstractMessageAdmin):
 
 @admin.register(Email)
 class EmailAdmin(AbstractMessageAdmin):
-    def get_fieldsets(self, request, obj=None):
-        fieldsets = super().get_fieldsets(request, obj=obj)
-        fields = fieldsets[0][1]['fields']
-        for f in [
-            'reply_to',
-            'cc_emails',
-            'bcc_emails',
-        ]:
-            if f not in fields:
-                fields.append(f)
-
-        fieldsets[0][1]['fields'] = fields
-        return fieldsets
+    fieldsets = [
+        ('Common Info', {
+            'fields': [
+                'recipient',
+                'sender',
+                'reply_to',
+                'cc_emails',
+                'bcc_emails',
+                'template',
+                'status',
+                'error',
+                'related_to',
+                'context',
+            ],
+        }),
+        ('Service Info', {
+            'fields': [
+                'created_at',
+                'modified_at',
+                'sent_at',
+                'service_context',
+            ]
+        }),
+        ('Provider Info', {
+            'fields': [
+                'provider_id',
+                'provider_response',
+            ]
+        })
+    ]
 
 
 @admin.register(SMS)
