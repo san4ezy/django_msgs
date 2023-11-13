@@ -32,12 +32,14 @@ class EmailAdmin(AbstractMessageAdmin):
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj=obj)
         fields = fieldsets[0][1]['fields']
-        fields.extend([
+        for f in [
             'reply_to',
             'cc_emails',
             'bcc_emails',
-        ])
-        fields = list(set(fields))
+        ]:
+            if f not in fields:
+                fields.append(f)
+
         fieldsets[0][1]['fields'] = fields
         return fieldsets
 
