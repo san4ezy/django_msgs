@@ -61,11 +61,13 @@ class AbstractMessage(TimeStampedModel):
         abstract = True
 
     class Status(TextChoices):
-        IN_QUEUE = 'in_queue', _('In queue')
+        IN_QUEUE = 'in_queue', _('In Queue')
         SENT = 'sent', _('Sent')
         ERROR = 'error', _('Error')
         DELIVERED = 'delivered', _('Delivered')
         REJECTED = 'rejected', _('Rejected')
+        OPENED = 'opened', _('Opened')
+        SPAM_REPORTED = 'spam_reported', _('Spam Reported')
 
     template = models.ForeignKey(AbstractTemplate, on_delete=models.CASCADE)
     recipient = models.CharField(max_length=64)
@@ -74,7 +76,7 @@ class AbstractMessage(TimeStampedModel):
     status = models.CharField(
         max_length=16, choices=Status.choices, default=Status.IN_QUEUE,
     )
-    error = models.CharField(max_length=256, **NULLABLE)
+    error = models.TextField(**NULLABLE)
 
     provider_id = models.CharField(max_length=64, **NULLABLE)
     provider_response = models.TextField(**NULLABLE)

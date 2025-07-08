@@ -92,26 +92,41 @@ class BaseProvider(object):
             raise MSGSCannotBeSent
         if not kwargs.get('lang'):
             kwargs['lang'] = self.get_lang()
-        if self.settings.get('is_active'):
-            self.pre_send(message, **kwargs)
-            response, err = None, None
-            try:
-                sender = self.get_sender(message, **kwargs)
-                response, is_success = self.perform(message, sender, **kwargs)
-            except Exception as e:
-                self.error(message, str(e))
-                err = e
-            else:
-                self.success(message, response)
-                self.post_send(
-                    message, response=response, is_success=is_success, **kwargs,
-                )
-            finally:
-                self.save_message(message)
-                if err and raise_exceptions:
-                    raise err
-                return response
-        raise MSGSProviderIsDisabled(f"{self.__class__.__name__}'s sending is disabled")
+        if not self.settings.get('is_active'):
+            raise MSGSProviderIsDisabled(f"{self.__class__.__name__}'s sending is disabled")
+        self.pre_send(message, **kwargs)
+        response, err = None, None
+        try:
+            sender = self.get_sender(message, **kwargs)
+            response, is_success = self.perform(message, sender, **kwargs)
+        except Exception as e:
+            self.error(message, str(e))
+            err = e
+        else:
+            self.success(message, response)
+            self.post_send(
+                message, response=response, is_success=is_success, **kwargs,
+            )
+        finally:
+            self.save_message(message)
+            if err and raise_exceptions:
+                raise err
+            return response
+
+    def process_webhook_event(self, event: dict):
+        # Process event data here
+        # Must find, update and return message object.
+        raise NotImplementedError
+
+    def check_webhook_signature(self, request):
+        # Check the payload signature sent with webhook.
+        # Implement it on the provider level.
+        return True
+
+    def webhook(self, data: list[dict]):
+        # Use this method as the API Webhook endpoint and pass the list of events.
+        for event in data:
+            self.process_webhook_event(event)
 
 
 class BaseEmailProvider(BaseProvider):

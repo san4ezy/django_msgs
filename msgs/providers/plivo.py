@@ -51,7 +51,7 @@ class PlivoSMSProvider(TemplatingMixin, BaseSMSProvider):
         )
         response = response.__dict__
         message.provider_response = response
-        return response.to_dict, True  # Dummy True
+        return response, True  # Dummy True
 
     def get_provider_id(self, message: AbstractMessage, response: dict) -> str:
         return str(response.get('message_uuid', [None, ])[0])

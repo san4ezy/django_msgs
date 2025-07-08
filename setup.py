@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="django_msgs",
-    version="1.6.1",
+    version="1.7.1",
     author="Alexander Yudkin",
     author_email="san4ezy@gmail.com",
     description="Emails and SMSs managing framework for Django",
@@ -26,5 +26,12 @@ setuptools.setup(
     python_requires='>=3.6',
     install_requires=[
         'django_json_widget',
-    ]
+    ],
+    extras_require={
+        'sendgrid': ['sendgrid>=6.0.0'],
+        'twilio': ['twilio>=7.0.0'],
+        # 'sendinblue': ['sib-api-v3-sdk>=7.0.0'],
+        'plivo': ['plivo>=4.0.0'],
+        # ... other providers
+    },
 )
