@@ -97,5 +97,8 @@ class SendgridEmailProvider(TemplatingMixin, BaseEmailProvider):
             "spamreport": AbstractMessage.Status.SPAM_REPORTED,
         }.get(event.get("event"))
         if event_status:
-            self.model.objects.filter(id=message_id).update(status=event_status)
+            # Use direct save to make all signals to work
+            msg = self.model.objects.filter(id=message_id).last()
+            msg.status = event_status
+            msg.save(update_fields=["status"])
         return None
