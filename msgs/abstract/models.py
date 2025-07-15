@@ -170,6 +170,7 @@ class AbstractMessage(TimeStampedModel):
         ])
         data['template'] = self.template
         data['content_type'] = self.content_type
+        data['service_context'] = self.service_context
         attachments = []
         if hasattr(self, 'attachments') and 'attachments' in data:
             data.pop('attachments')
