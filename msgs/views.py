@@ -15,7 +15,13 @@ from msgs.helpers import get_provider_class_from_string
 @method_decorator(require_http_methods(["POST"]), name='dispatch')
 class WebhookView(View):
     def post(self, request, provider: str):
-        payload = request.body
+        match request.content_type:
+            case "application/json":
+                payload = json.loads(request.body)
+            case "application/x-www-form-urlencoded":
+                payload = [request.POST.dict(), ]
+            case _:
+                payload = None
 
         provider_settings = settings.MSGS["providers"].get(provider)
         if not provider_settings:
@@ -26,11 +32,11 @@ class WebhookView(View):
             return HttpResponseBadRequest("Invalid signature")
 
         try:
-            events = json.loads(payload)
-            provider.webhook(events)
+            provider.webhook(payload)
             return HttpResponse("OK", status=200)
 
         except json.JSONDecodeError:
             return HttpResponseBadRequest("Invalid JSON")
         except Exception as e:
+            # raise e
             return HttpResponse("Internal Server Error", status=500)
