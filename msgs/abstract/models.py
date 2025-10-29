@@ -98,14 +98,17 @@ class AbstractMessage(TimeStampedModel):
     def __str__(self):
         return f"{self.__class__.__name__} for {self.recipient}"
 
-    def save(self, **kwargs):
-        super().save(**kwargs)
+    def save(self, update_fields=None, **kwargs):
+        super().save(update_fields=update_fields, **kwargs)
         if self.__origin_status != self.status:
-            self.send_signal(
-                STATUS_CHANGED_SIGNAL,
-                instance=self,
-                origin_status=self.__origin_status,
-            )
+            if update_fields is None or 'status' in update_fields:
+                original_status = self.__origin_status
+                self.__origin_status = self.status
+                self.send_signal(
+                    STATUS_CHANGED_SIGNAL,
+                    instance=self,
+                    origin_status=original_status,
+                )
 
     @classmethod
     def build(
