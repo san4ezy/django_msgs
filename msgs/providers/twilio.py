@@ -102,7 +102,9 @@ class TwilioSMSProvider(TwilioBaseProvider, BaseSMSProvider):
         }.get(event.get('MessageStatus'))
 
         if event_status:
-            self.model.objects.filter(provider_id=message_id).update(status=event_status)
+            msg = self.model.objects.filter(provider_id=message_id).last()
+            msg.status = event_status
+            msg.save(update_fields=["status"])
         return None
 
     def get_provider_id(self, message: AbstractMessage, response: dict) -> str:
